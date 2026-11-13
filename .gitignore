@@ -8,6 +8,7 @@ target/
 .classpath
 .project
 .settings/
-
+.claude
+docs
 # OS
 .DS_Store

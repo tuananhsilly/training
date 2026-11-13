@@ -1,5 +1,7 @@
 package com.tunna.training.practice2;
 
+import java.time.LocalDate;
+
 public class Electronics extends Product {
 
     private final int warrantyMonths;
@@ -29,6 +31,11 @@ public class Electronics extends Product {
     @Override
     public Category getCategory() {
         return Category.ELECTRONICS;
+    }
+
+    @Override
+    public ConsumptionStatus evaluateConsumption(LocalDate today) {
+        return getQuantity() < 3 ? ConsumptionStatus.SOLD : ConsumptionStatus.NOT_EVALUATED;
     }
 
     @Override

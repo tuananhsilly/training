@@ -1,5 +1,7 @@
 package com.tunna.training.practice2;
 
+import java.time.LocalDate;
+
 // Common data of every kind of goods; subclasses decide their category (and therefore their VAT rate)
 public abstract class Product {
 
@@ -24,6 +26,9 @@ public abstract class Product {
     public abstract Category getCategory();
 
     protected abstract String getDetails();
+
+    // Each kind of goods has its own rule for judging how well it sells
+    public abstract ConsumptionStatus evaluateConsumption(LocalDate today);
 
     public String getCode() {
         return code;

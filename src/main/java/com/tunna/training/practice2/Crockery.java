@@ -1,6 +1,7 @@
 package com.tunna.training.practice2;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class Crockery extends Product {
 
@@ -28,6 +29,17 @@ public class Crockery extends Product {
     @Override
     public Category getCategory() {
         return Category.CROCKERY;
+    }
+
+    public long getStorageDays(LocalDate today) {
+        return ChronoUnit.DAYS.between(arrivalDate, today);
+    }
+
+    @Override
+    public ConsumptionStatus evaluateConsumption(LocalDate today) {
+        return getQuantity() > 50 && getStorageDays(today) > 10
+                ? ConsumptionStatus.SLOW_SALE
+                : ConsumptionStatus.NOT_EVALUATED;
     }
 
     @Override

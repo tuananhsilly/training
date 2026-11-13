@@ -44,6 +44,13 @@ public class Food extends Product {
     }
 
     @Override
+    public ConsumptionStatus evaluateConsumption(LocalDate today) {
+        return getQuantity() > 0 && isExpired(today)
+                ? ConsumptionStatus.HARD_TO_SELL
+                : ConsumptionStatus.NOT_EVALUATED;
+    }
+
+    @Override
     protected String getDetails() {
         return String.format("MFG=%s, EXP=%s, supplier=%s", manufactureDate, expiryDate, supplier);
     }

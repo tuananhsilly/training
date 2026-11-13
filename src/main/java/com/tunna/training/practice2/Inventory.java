@@ -1,39 +1,65 @@
 package com.tunna.training.practice2;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
+// Goods list management (DSHH), backed by an array that grows when full
 public class Inventory {
 
-    private final List<Product> products = new ArrayList<>();
+    private static final int INITIAL_CAPACITY = 10;
 
-    public void add(Product product) {
-        boolean duplicate = products.stream().anyMatch(p -> p.getCode().equals(product.getCode()));
-        if (duplicate) {
-            throw new IllegalArgumentException("duplicate product code: " + product.getCode());
+    private Product[] products = new Product[INITIAL_CAPACITY];
+    private int size;
+
+    // Returns false (and adds nothing) when the product code already exists
+    public boolean add(Product product) {
+        if (product == null || findByCode(product.getCode()) != null) {
+            return false;
         }
-        products.add(product);
+        if (size == products.length) {
+            products = Arrays.copyOf(products, products.length * 2);
+        }
+        products[size++] = product;
+        return true;
     }
 
-    public List<Product> getProducts() {
-        return Collections.unmodifiableList(products);
+    public Product findByCode(String code) {
+        for (int i = 0; i < size; i++) {
+            if (products[i].getCode().equalsIgnoreCase(code)) {
+                return products[i];
+            }
+        }
+        return null;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public Product[] getProducts() {
+        return Arrays.copyOf(products, size);
     }
 
     public int totalQuantity(Category category) {
-        return products.stream()
-                .filter(p -> p.getCategory() == category)
-                .mapToInt(Product::getQuantity)
-                .sum();
+        int total = 0;
+        for (int i = 0; i < size; i++) {
+            if (products[i].getCategory() == category) {
+                total += products[i].getQuantity();
+            }
+        }
+        return total;
     }
 
     public double totalVat(Category category) {
-        return products.stream()
-                .filter(p -> p.getCategory() == category)
-                .mapToDouble(Product::getVatAmount)
-                .sum();
+        double total = 0;
+        for (int i = 0; i < size; i++) {
+            if (products[i].getCategory() == category) {
+                total += products[i].getVatAmount();
+            }
+        }
+        return total;
     }
 
     public Map<Category, Integer> quantityByCategory() {
@@ -50,5 +76,16 @@ public class Inventory {
             result.put(category, totalVat(category));
         }
         return result;
+    }
+
+    public Product[] findByConsumption(ConsumptionStatus status, LocalDate today) {
+        Product[] matches = new Product[size];
+        int count = 0;
+        for (int i = 0; i < size; i++) {
+            if (products[i].evaluateConsumption(today) == status) {
+                matches[count++] = products[i];
+            }
+        }
+        return Arrays.copyOf(matches, count);
     }
 }

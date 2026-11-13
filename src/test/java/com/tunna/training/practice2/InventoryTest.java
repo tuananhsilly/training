@@ -73,9 +73,22 @@ class InventoryTest {
     }
 
     @Test
-    void rejectsDuplicateCodes() {
+    void addFailsForDuplicateCode() {
         Inventory inventory = new Inventory();
-        inventory.add(food("F1", 1, 1));
-        assertThrows(IllegalArgumentException.class, () -> inventory.add(food("F1", 2, 2)));
+        assertTrue(inventory.add(food("F1", 1, 1)));
+        assertFalse(inventory.add(food("F1", 2, 2)));
+        assertFalse(inventory.add(food("f1", 2, 2)));
+        assertEquals(1, inventory.size());
+    }
+
+    @Test
+    void arrayGrowsBeyondInitialCapacity() {
+        Inventory inventory = new Inventory();
+        for (int i = 0; i < 25; i++) {
+            assertTrue(inventory.add(food("F" + i, 1, 1)));
+        }
+        assertEquals(25, inventory.size());
+        assertEquals(25, inventory.getProducts().length);
+        assertEquals(25, inventory.totalQuantity(Category.FOOD));
     }
 }
